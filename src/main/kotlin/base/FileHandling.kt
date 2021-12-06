@@ -10,6 +10,7 @@ class FileHandling(private val filename: String) {
             function(translate(line))
             line = stream.readLine()
         }
+        bufferedReader.close()
     }
 
     fun iterate(function: (String) -> Unit) {
@@ -19,6 +20,7 @@ class FileHandling(private val filename: String) {
             function(line)
             line = stream.readLine()
         }
+        bufferedReader.close()
     }
 
     fun <T : Any> map(translate: (String) -> T?): List<T> =
@@ -30,10 +32,15 @@ class FileHandling(private val filename: String) {
             .toList()
 
     fun getStringList(): List<String> =
-        bufferedReader.readLines()
+        bufferedReader.run {
+            readLines().also {
+                close()
+            }
+        }
 
     private val bufferedReader
         get() = FileHandling::class.java
             .getResourceAsStream(filename)!!
             .bufferedReader()
+
 }
